@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
 
 const chunkPxWidth = 1000; // Width of the chunk
-const chunkDepth = 1000; // Depth of the chunk
+const chunkDepth = 500; // Depth of the chunk
 const numChunks = 5; // Number of chunks to cycle
-const movementSpeed = 1; // Speed of movement
+const movementSpeed = 0.5; // Speed of movement
 
 class ChunkManager extends Group {
     constructor(parent) {
@@ -16,18 +16,20 @@ class ChunkManager extends Group {
 
         // Initialize chunks
         for (let i = 0; i < numChunks; i++) {
-            this.createChunk(-i * chunkDepth - chunkDepth);
+            // with different colors
+            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff];
+            this.createChunk(-i * chunkDepth - chunkDepth, colors[i]);
         }
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
     }
 
-    createChunk(zPosition) {
+    createChunk(zPosition, color) {
         // Create the geometry and material for the chunk
         const geometry = new PlaneGeometry(chunkPxWidth, chunkPxWidth, 10, 10);
         const material = new MeshBasicMaterial({
-            color: 0xffffff,
+            color: color,
             // wireframe: true,
         });
         const chunk = new Mesh(geometry, material);
@@ -36,7 +38,7 @@ class ChunkManager extends Group {
         chunk.rotation.x = -Math.PI / 2;
         chunk.position.z = zPosition;
 
-        // Add the chunk to the scene and the chunks array
+        // Add the chunk to the scene and to the chunks array
         this.add(chunk);
         this.chunks.push(chunk);
     }

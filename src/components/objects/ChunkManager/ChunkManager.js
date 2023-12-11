@@ -7,7 +7,7 @@ const chunkPxWidth = 10; // Width of the chunk
 const chunkDepth = 40; // Depth of the chunk
 // Note: Depth and length are the same so they don't overlap and spazz out
 const numChunks = 5; // Number of chunks to cycle
-const movementSpeed = 0.5; // Speed of movement
+const movementSpeed = 0.4; // Speed of movement
 
 class ChunkManager extends Group {
     constructor(parent) {
@@ -42,23 +42,20 @@ class ChunkManager extends Group {
         chunk.rotation.x = -Math.PI / 2;
         chunk.position.z = zPosition;
 
+        // Add obstacle to each chunk
+        const obstacle = new Obstacle(); // Now automatically determines its size and type
+
+        // Random position within the chunk
+        const positionRange = chunkPxWidth * 0.2;
+        obstacle.position.x = Math.random() * positionRange - positionRange / 2;
+        obstacle.position.z = Math.random() * positionRange - positionRange / 2;
+
+        // Attach the obstacle to the chunk
+        chunk.add(obstacle);
+
         // Add the chunk to the scene and to the chunks array
         this.add(chunk);
         this.chunks.push(chunk);
-
-        // Add cube to each chunk
-        const cubeSize = 1; // Half the previous size
-        const randomColor = Math.random() * 0xffffff; // Generate a random color
-        const cube = new Obstacle(cubeSize, randomColor);
-
-        // Random position within a smaller range near the center of the chunk
-        const positionRange = chunkPxWidth * 0.2; // 20% of the chunk width
-        cube.position.x = Math.random() * positionRange - positionRange / 2;
-        cube.position.y = Math.random() * positionRange - positionRange / 2; // Set y position to half the cube's height
-        cube.position.z = 0.5;
-
-        // Attach the cube to the chunk
-        chunk.add(cube);
     }
 
     update(timeStamp) {

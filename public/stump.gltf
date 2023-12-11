@@ -1249,7 +1249,7 @@
     "buffers": [
         {
             "byteLength": 26680,
-            "uri": "scene.bin"
+            "uri": "stump.bin"
         }
     ],
     "extensionsRequired": ["KHR_materials_pbrSpecularGlossiness"],

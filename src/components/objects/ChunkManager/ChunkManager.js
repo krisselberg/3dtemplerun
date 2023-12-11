@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
+import Obstacle from '../Obstacle/Obstacle';
 
 const chunkPxLength = 40; // Length of the chunk
 const chunkPxWidth = 10; // Width of the chunk
@@ -44,6 +45,20 @@ class ChunkManager extends Group {
         // Add the chunk to the scene and to the chunks array
         this.add(chunk);
         this.chunks.push(chunk);
+
+        // Add cube to each chunk
+        const cubeSize = 1; // Half the previous size
+        const randomColor = Math.random() * 0xffffff; // Generate a random color
+        const cube = new Obstacle(cubeSize, randomColor);
+
+        // Random position within a smaller range near the center of the chunk
+        const positionRange = chunkPxWidth * 0.2; // 20% of the chunk width
+        cube.position.x = Math.random() * positionRange - positionRange / 2;
+        cube.position.y = Math.random() * positionRange - positionRange / 2; // Set y position to half the cube's height
+        cube.position.z = 0.5;
+
+        // Attach the cube to the chunk
+        chunk.add(cube);
     }
 
     update(timeStamp) {

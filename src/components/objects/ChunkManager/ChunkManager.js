@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
 
-const chunkPxWidth = 1000; // Width of the chunk
-const chunkDepth = 500; // Depth of the chunk
+const chunkPxLength = 40; // Length of the chunk
+const chunkPxWidth = 10; // Width of the chunk
+const chunkDepth = 40; // Depth of the chunk
+// Note: Depth and length are the same so they don't overlap and spazz out
 const numChunks = 5; // Number of chunks to cycle
 const movementSpeed = 0.5; // Speed of movement
 
@@ -18,6 +20,7 @@ class ChunkManager extends Group {
         for (let i = 0; i < numChunks; i++) {
             // with different colors
             const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff];
+            // create a chunk that is long but thin
             this.createChunk(-i * chunkDepth - chunkDepth, colors[i]);
         }
 
@@ -27,7 +30,7 @@ class ChunkManager extends Group {
 
     createChunk(zPosition, color) {
         // Create the geometry and material for the chunk
-        const geometry = new PlaneGeometry(chunkPxWidth, chunkPxWidth, 10, 10);
+        const geometry = new PlaneGeometry(chunkPxWidth, chunkPxLength, 10, 10);
         const material = new MeshBasicMaterial({
             color: color,
             // wireframe: true,
@@ -49,7 +52,7 @@ class ChunkManager extends Group {
             chunk.position.z += movementSpeed;
 
             // If a chunk has moved past the camera, reset its position to the back
-            if (chunk.position.z > 0) {
+            if (chunk.position.z > 30) {
                 chunk.position.z -= numChunks * chunkDepth;
             }
         }

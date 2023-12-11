@@ -13,7 +13,7 @@ module.exports = {
     target: 'web',
     devtool: 'source-map',
     stats: {
-        warnings: false
+        warnings: false,
     },
     module: {
         rules: [
@@ -44,4 +44,19 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({ title: pkg.title, favicon: 'src/favicon.ico' }),
     ],
+    devServer: {
+        headers: {
+            'Access-Control-Allow-Origin': '*', // Allow all origins
+            'Access-Control-Allow-Methods':
+                'GET, POST, PUT, DELETE, PATCH, OPTIONS', // Allowed methods
+            'Access-Control-Allow-Headers':
+                'X-Requested-With, content-type, Authorization', // Allowed headers
+        },
+        static: {
+            directory: path.join(__dirname, 'public'), // Serve static files from the 'public' directory
+            publicPath: '/', // Public URL path
+        },
+        historyApiFallback: true, // For single-page applications
+        hot: true, // Enable hot module replacement
+    },
 };

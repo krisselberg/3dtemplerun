@@ -1,40 +1,55 @@
-import { BoxGeometry, CylinderGeometry, Mesh, MeshBasicMaterial } from 'three';
+import {
+    BoxGeometry,
+    CylinderGeometry,
+    Mesh,
+    MeshBasicMaterial,
+    Group,
+} from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-class Obstacle extends Mesh {
+class Obstacle extends Group {
     constructor() {
-        // Randomly choose the type of obstacle - cube or tree stump
-        const isCube = Math.random() > 0.5;
+        super();
 
+        // Randomly choose the type of obstacle - cube or tree stump
+        if (Math.random() > 0.5) {
+            this.createCube();
+        } else {
+            this.loadTreeStump();
+        }
+    }
+
+    createCube() {
         // Cube geometry and size
         const cubeSize = 1;
         const cubeGeometry = new BoxGeometry(cubeSize, cubeSize, cubeSize);
-
-        // Tree stump geometry and size
-        const stumpRadius = 4;
-        const stumpHeight = 6;
-        const stumpGeometry = new CylinderGeometry(
-            stumpRadius,
-            stumpRadius,
-            stumpHeight,
-            4
-        );
-
-        // Select geometry based on random choice
-        const geometry = isCube ? cubeGeometry : stumpGeometry;
-
-        // Random color for the obstacle
         const color = Math.random() * 0xffffff;
-        const material = new MeshBasicMaterial({ color });
+        const cubeMaterial = new MeshBasicMaterial({ color });
+        const cube = new Mesh(cubeGeometry, cubeMaterial);
 
-        // Call the Mesh constructor
-        super(geometry, material);
+        // Add cube to the group and set position
+        this.add(cube);
+        cube.position.set(0, cubeSize / 2, 0);
+    }
 
-        // Set the initial position of the obstacle
-        if (isCube) {
-            this.position.set(0, 0, 0); // For cube
-        } else {
-            this.position.set(0, 0, 0); // For tree stump
-        }
+    loadTreeStump() {
+        const loader = new GLTFLoader();
+        loader.load(
+            './scene.gltf',
+            (gltf) => {
+                // Add the loaded tree stump model to the group
+                this.add(gltf.scene);
+                // Adjust stump position and scale if necessary (rotate)
+                gltf.scene.position.set(0, 0, 0); // Adjust as needed
+                gltf.scene.scale.set(1, 1, 1); // Adjust scale as needed
+                // rotate
+                gltf.scene.rotation.x = Math.PI / 2;
+            },
+            undefined,
+            function (error) {
+                console.error('An error happened', error);
+            }
+        );
     }
 }
 

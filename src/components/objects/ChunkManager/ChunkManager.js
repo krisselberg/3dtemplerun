@@ -7,7 +7,7 @@ const chunkPxWidth = 10; // Width of the chunk
 const chunkDepth = 40; // Depth of the chunk
 // Note: Depth and length are the same so they don't overlap and spazz out
 const numChunks = 5; // Number of chunks to cycle
-const movementSpeed = 0.4; // Speed of movement
+const movementSpeed = 0.2; // Speed of movement
 
 class ChunkManager extends Group {
     constructor(parent) {

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Tree Stump
+* source:	https://sketchfab.com/3d-models/tree-stump-0928aff3c0ce4671a145fe334bbf1b6a
+* author:	PULSAR BYTES (https://sketchfab.com/pulsarbytes)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Tree Stump" (https://sketchfab.com/3d-models/tree-stump-0928aff3c0ce4671a145fe334bbf1b6a) by PULSAR BYTES (https://sketchfab.com/pulsarbytes) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

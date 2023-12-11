@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color } from 'three';
-import { Flower } from 'objects';
+import { Person } from 'objects';
 import { BasicLights } from 'lights';
 import { ChunkManager } from 'objects';
 
@@ -21,9 +21,9 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         const chunkManager = new ChunkManager(this); // Create ChunkManager instance
-        const flower = new Flower(this);
+        const person = new Person(this);
         const lights = new BasicLights();
-        this.add(chunkManager, flower, lights);
+        this.add(chunkManager, person, lights);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);

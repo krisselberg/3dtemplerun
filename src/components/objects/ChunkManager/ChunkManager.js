@@ -48,7 +48,10 @@ class ChunkManager extends Group {
         // Random position within the chunk
         const positionRange = chunkPxWidth * 0.2;
         obstacle.position.x = Math.random() * positionRange - positionRange / 2;
-        obstacle.position.z = Math.random() * positionRange - positionRange / 2;
+
+        // get obstacle height and position z so the bottom of obstacle is on ground
+        const obstacleHeight = obstacle.getHeight();
+        obstacle.position.z = obstacleHeight / 2;
 
         // Attach the obstacle to the chunk
         chunk.add(obstacle);

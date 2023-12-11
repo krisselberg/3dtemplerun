@@ -35,12 +35,12 @@ class Obstacle extends Group {
     loadTreeStump() {
         const loader = new GLTFLoader();
         loader.load(
-            './scene.gltf',
+            './stump.gltf',
             (gltf) => {
                 // Add the loaded tree stump model to the group
                 this.add(gltf.scene);
                 // Adjust stump position and scale if necessary (rotate)
-                gltf.scene.position.set(0, 0, 0); // Adjust as needed
+                gltf.scene.position.set(0, 0, -1); // Adjust as needed
                 gltf.scene.scale.set(1, 1, 1); // Adjust scale as needed
                 // rotate
                 gltf.scene.rotation.x = Math.PI / 2;

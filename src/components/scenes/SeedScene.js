@@ -31,6 +31,10 @@ class SeedScene extends Scene {
 
         this.isGameRunning = true;
         this.setupRestartButton();
+
+        this.startTime = Date.now();
+        this.score = 0;
+        this.scoreElement = document.getElementById('scoreElement');
     }
 
     setupDeathSound() {
@@ -72,7 +76,6 @@ class SeedScene extends Scene {
         const obstacles = chunks.flatMap((chunk) =>
             chunk.children.filter((child) => child instanceof Obstacle)
         );
-        console.log(obstacles);
 
         for (const obstacle of obstacles) {
             const obstacleBoundingBox = obstacle.getBoundingBox();
@@ -85,6 +88,12 @@ class SeedScene extends Scene {
                 // Additional actions on collision
                 break; // Optional: stop checking further if collision is detected
             }
+        }
+
+        // Update score based on elapsed time
+        this.score = Math.floor((Date.now() - this.startTime) / 1000);
+        if (this.scoreElement) {
+            this.scoreElement.textContent = `Score: ${this.score}`;
         }
     }
 

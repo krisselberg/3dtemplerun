@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 titleScreen.style.display = 'none'; // Hide the title screen
             }
             canvas.style.display = 'block'; // Show the canvas
+            scoreElement.style.display = 'block'; // Show the score
             startAnimationLoop(); // Start the animation loop
             if (audioContext.state === 'suspended') {
                 audioContext.resume();

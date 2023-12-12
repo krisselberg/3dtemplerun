@@ -73,9 +73,11 @@ class Person extends Group {
     }
 
     jump() {
-        // Use timing library for more precice "bounce" animation
-        // TweenJS guide: http://learningthreejs.com/blog/2011/08/17/tweenjs-for-smooth-animation/
-        // Possible easings: http://sole.github.io/tween.js/examples/03_graphs.html
+        // Check if already jumping, if so, do nothing
+        if (this.isJumping) return;
+
+        this.isJumping = true; // Set flag to indicate jumping
+
         const jumpUp = new TWEEN.Tween(this.position)
             .to({ y: this.position.y + 2 }, 500)
             .easing(TWEEN.Easing.Quadratic.Out);
@@ -83,10 +85,11 @@ class Person extends Group {
             .to({ y: 0 }, 500)
             .easing(TWEEN.Easing.Quadratic.In);
 
-        // Fall down after jumping up
         jumpUp.onComplete(() => fallDown.start());
+        fallDown.onComplete(() => {
+            this.isJumping = false; // Reset flag once the person lands back
+        });
 
-        // Start animation
         if (this.jumpAction) {
             if (this.jumpSound && !this.jumpSound.isPlaying) {
                 this.jumpSound.play();

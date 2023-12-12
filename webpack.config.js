@@ -42,7 +42,11 @@ module.exports = {
         },
     },
     plugins: [
-        new HtmlWebpackPlugin({ title: pkg.title, favicon: 'src/favicon.ico' }),
+        new HtmlWebpackPlugin({
+            title: pkg.title,
+            favicon: 'src/favicon.ico',
+            template: 'index.html', // Path to your index.html file
+        }),
     ],
     devServer: {
         headers: {

@@ -3,6 +3,7 @@ import { Scene, Color } from 'three';
 import { Person } from 'objects';
 import { BasicLights } from 'lights';
 import { ChunkManager } from 'objects';
+import { Obstacle } from 'objects';
 
 class SeedScene extends Scene {
     constructor() {
@@ -27,6 +28,9 @@ class SeedScene extends Scene {
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+
+        this.isGameRunning = true;
+        this.setupRestartButton();
     }
 
     addToUpdateList(object) {
@@ -34,6 +38,10 @@ class SeedScene extends Scene {
     }
 
     update(timeStamp) {
+        if (!this.isGameRunning) {
+            return; // Stop the update loop if the game is not running
+        }
+
         const { rotationSpeed, updateList } = this.state;
         this.rotation.y = (rotationSpeed * timeStamp) / 10000;
 
@@ -41,6 +49,62 @@ class SeedScene extends Scene {
         for (const obj of updateList) {
             obj.update(timeStamp);
         }
+
+        // Collision detection
+        const person = this.children.find((child) => child instanceof Person);
+        const personBoundingBox = person.getBoundingBox();
+        // Get all chunks from ChunkManager
+        const chunks = this.children
+            .filter((child) => child instanceof ChunkManager)
+            .flatMap((chunkManager) => chunkManager.chunks);
+
+        // Find all obstacles in the chunks
+        const obstacles = chunks.flatMap((chunk) =>
+            chunk.children.filter((child) => child instanceof Obstacle)
+        );
+
+        for (const obstacle of obstacles) {
+            const obstacleBoundingBox = obstacle.getBoundingBox();
+            if (
+                personBoundingBox &&
+                obstacleBoundingBox &&
+                personBoundingBox.intersectsBox(obstacleBoundingBox)
+            ) {
+                this.onGameOver();
+                // Additional actions on collision
+                break; // Optional: stop checking further if collision is detected
+            }
+        }
+    }
+
+    onGameOver() {
+        console.log('Game Over');
+        this.isGameRunning = false; // Stop the game
+
+        // Display the game over overlay
+        const overlay = document.getElementById('gameOverOverlay');
+        console.log(overlay);
+        if (overlay) {
+            overlay.style.display = 'flex';
+        }
+    }
+
+    setupRestartButton() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const restartButton = document.getElementById('restartButton');
+            if (restartButton) {
+                restartButton.addEventListener('click', () => {
+                    this.restartGame();
+                });
+            }
+        });
+    }
+
+    restartGame() {
+        console.log('Restarting game...');
+
+        // Reload the entire webpage
+        window.location.reload();
     }
 }
 

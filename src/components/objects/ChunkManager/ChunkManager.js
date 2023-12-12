@@ -82,7 +82,6 @@ class ChunkManager extends Group {
         // Add the chunk to the scene and to the chunks array
         this.add(chunk);
         this.chunks.push(chunk);
-        
     }
 
     sendChunkToBack(chunk) {

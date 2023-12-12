@@ -35,12 +35,12 @@ class ChunkManager extends Group {
         // Initialize chunks
         for (let i = 0; i < numChunks; i++) {
             // with different colors
-            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff, 0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff];
+            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00];
             // create a chunk that is long but thin
             // addObstacleFlag is such that every nth chunk has an obstacle
             let addObstacleFlag = false;
             if (i % chunksBetweenObstacles === 0) addObstacleFlag = true;
-            this.createChunk(-i * chunkDepth - chunkDepth, colors[i], addObstacleFlag);
+            this.createChunk(-i * chunkDepth - chunkDepth, colors[i % 4], addObstacleFlag);
         }
 
         // Add self to parent's update list

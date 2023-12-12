@@ -68,6 +68,10 @@ class Person extends Group {
                 this.jump();
             } else if (event.code === 'ArrowDown') {
                 this.slide();
+            } else if (event.code === 'ArrowLeft') {
+                this.turnLeft();
+            } else if (event.code === 'ArrowRight') {
+                this.turnRight();
             }
         });
     }
@@ -130,6 +134,32 @@ class Person extends Group {
         }
         slide.start();
     }
+
+    // Character turns to run left
+    turnLeft() {
+        const targetRotationLeft = this.rotation.y + Math.PI / 2; 
+    
+        const turnTween = new TWEEN.Tween(this.rotation)
+            .to({ y: targetRotationLeft }, 333) // 333 milliseconds is roughly a third of a second
+            .easing(TWEEN.Easing.Quadratic.InOut) // InOut easing for a smooth start and end
+            .start(); // Start the tween animation
+
+        // Updated rotation value
+        this.rotation.y = this.rotation.y + Math.PI / 2;
+    }    
+
+    // Character turns to run right
+    turnRight() {
+        const targetRotationLeft = this.rotation.y - Math.PI / 2; 
+    
+        const turnTween = new TWEEN.Tween(this.rotation)
+            .to({ y: targetRotationLeft }, 333) // 333 milliseconds is roughly a third of a second
+            .easing(TWEEN.Easing.Quadratic.InOut) // InOut easing for a smooth start and end
+            .start(); // Start the tween animation
+        
+        // Updated rotation value
+        this.rotation.y = this.rotation.y - Math.PI / 2;
+    }    
 
     update(timeStamp) {
         if (this.mixer) {

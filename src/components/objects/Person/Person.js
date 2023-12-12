@@ -23,10 +23,11 @@ class Person extends Group {
         loader.load('./person.gltf', (gltf) => {
             // Set up the mixer
             this.mixer = new AnimationMixer(gltf.scene);
-
             // Find and play the running animation
             const runAction = this.mixer.clipAction(gltf.animations[3]); // Assumes running animation is the first
             runAction.play();
+            // Store the jump action for later use
+            this.jumpAction = this.mixer.clipAction(gltf.animations[1]);
             // rotate the person to face the camera
             gltf.scene.rotation.y = Math.PI;
             this.add(gltf.scene);
@@ -36,28 +37,32 @@ class Person extends Group {
         // Add self to parent's update list
         parent.addToUpdateList(this);
 
-        // Populate GUI
-        this.state.gui.add(this.state, 'spin');
+        // Add event handlers for up arrow to spin
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'ArrowUp') {
+                this.jump();
+            }
+        });
     }
 
-    spin() {
-        // Add a simple twirl
-        this.state.twirl += 6 * Math.PI;
-
+    jump() {
         // Use timing library for more precice "bounce" animation
         // TweenJS guide: http://learningthreejs.com/blog/2011/08/17/tweenjs-for-smooth-animation/
         // Possible easings: http://sole.github.io/tween.js/examples/03_graphs.html
         const jumpUp = new TWEEN.Tween(this.position)
-            .to({ y: this.position.y + 1 }, 300)
+            .to({ y: this.position.y + 2 }, 500)
             .easing(TWEEN.Easing.Quadratic.Out);
         const fallDown = new TWEEN.Tween(this.position)
-            .to({ y: 0 }, 300)
+            .to({ y: 0 }, 500)
             .easing(TWEEN.Easing.Quadratic.In);
 
         // Fall down after jumping up
         jumpUp.onComplete(() => fallDown.start());
 
         // Start animation
+        if (this.jumpAction) {
+            this.jumpAction.reset().play();
+        }
         jumpUp.start();
     }
 

@@ -35,7 +35,9 @@ class Obstacle extends Group {
 
         // Add cube to the group and set position
         this.add(cube);
-        cube.position.set(0, 0, 0);
+        // Randomize vertical position (either 0 or 1)
+        const verticalPosition = Math.round(Math.random());
+        cube.position.set(0, 0, verticalPosition);
 
         this.boundingBox = new Box3().setFromObject(cube);
         this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000);

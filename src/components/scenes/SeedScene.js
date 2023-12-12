@@ -6,7 +6,7 @@ import { ChunkManager } from 'objects';
 import { Obstacle } from 'objects';
 
 class SeedScene extends Scene {
-    constructor() {
+    constructor(characterCamera) {
         // Call parent Scene() constructor
         super();
 
@@ -25,7 +25,10 @@ class SeedScene extends Scene {
         // Load and set up the death sound
         this.setupDeathSound();
 
-        const person = new Person(this, this.listener);
+        // camera
+        const camera = characterCamera;
+
+        const person = new Person(this, this.listener, chunkManager, camera);
         const lights = new BasicLights();
         this.add(chunkManager, person, lights);
 

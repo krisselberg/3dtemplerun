@@ -13,11 +13,14 @@ import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 const DIRECTION = { LEFT: -1, STRAIGHT: 0, RIGHT: 1 }; // Which way is the hero currently moving in the universe
 
 class Person extends Group {
-    constructor(parent, listener) {
+    constructor(parent, listener, chunkManager, camera) {
         // Call parent Group() constructor
         super();
 
         this.previousTimestamp = 0; // Used to calculate delta time
+        this.chunkManager = chunkManager; // Reference to the ChunkManager
+
+        this.camera = camera;
 
         this.direction = DIRECTION.STRAIGHT;
 
@@ -72,10 +75,11 @@ class Person extends Group {
                 this.jump();
             } else if (event.code === 'ArrowDown') {
                 this.slide();
-            } else if (event.code === 'ArrowLeft') {
-                this.turnLeft();
-            } else if (event.code === 'ArrowRight') {
-                this.turnRight();
+            } else if (
+                event.code === 'ArrowLeft' ||
+                event.code === 'ArrowRight'
+            ) {
+                this.handleTurn(event.code);
             }
         });
     }
@@ -194,28 +198,62 @@ class Person extends Group {
         }
     }
 
+    // Method to handle left and right turns
+    handleTurn(direction) {
+        // Check if it's safe to turn left or right
+        const canTurnLeft = this.chunkManager.canTurnLeft;
+        const canTurnRight = this.chunkManager.canTurnRight;
+
+        if (direction === 'ArrowLeft' && !canTurnLeft) {
+            // Not safe to turn left
+            console.log('Game Over - Unsafe Left Turn');
+            this.parent.onGameOver();
+            return;
+        }
+
+        if (direction === 'ArrowRight' && !canTurnRight) {
+            // Not safe to turn right
+            console.log('Game Over - Unsafe Right Turn');
+            this.parent.onGameOver();
+            return;
+        }
+
+        // Execute turn
+        if (direction === 'ArrowLeft') {
+            this.turnLeft();
+        } else if (direction === 'ArrowRight') {
+            this.turnRight();
+        }
+    }
+
+    // Method to update the canTurn flag
+    updateTurnWindow(status) {
+        this.canTurn = status;
+    }
+
     // Character turns to run left
     turnLeft() {
         // To ensure you can't turn when you're in the middle of a turn
         if (this.isTurning === true) return;
         this.isTurning = true;
 
-        const targetRotationLeft = this.rotation.y + Math.PI / 2;
+        const targetRotation = this.rotation.y + Math.PI / 2;
 
-        const turnTween = new TWEEN.Tween(this.rotation)
-            .to({ y: targetRotationLeft }, 333) // 333 milliseconds is roughly a third of a second
-            .easing(TWEEN.Easing.Quadratic.InOut) // InOut easing for a smooth start and end
-            .start(); // Start the tween animation
+        // Person rotation
+        new TWEEN.Tween(this.rotation)
+            .onComplete(() => {
+                this.isTurning = false; // Reset flag once the turn is done
+            })
+            .to({ y: targetRotation }, 333)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
 
-        turnTween.onComplete(() => {
-            this.isTurning = false;
-            // Update the universal direction of the character based on the direction they were facing pre-turn
-            if (this.direction === DIRECTION.STRAIGHT) {
-                this.direction = DIRECTION.LEFT;
-            } else if (this.direction === DIRECTION.RIGHT) {
-                this.direction = DIRECTION.STRAIGHT;
-            }
-        });
+        // set camera to face left
+        if (this.camera.position.z == 7) {
+            this.camera.position.set(7, 2, 0);
+        } else {
+            this.camera.position.set(0, 2, 7);
+        }
     }
 
     // Character turns to run right
@@ -224,22 +262,23 @@ class Person extends Group {
         if (this.isTurning === true) return;
         this.isTurning = true;
 
-        const targetRotationLeft = this.rotation.y - Math.PI / 2;
+        const targetRotation = this.rotation.y - Math.PI / 2;
 
-        const turnTween = new TWEEN.Tween(this.rotation)
-            .to({ y: targetRotationLeft }, 333) // 333 milliseconds is roughly a third of a second
-            .easing(TWEEN.Easing.Quadratic.InOut) // InOut easing for a smooth start and end
-            .start(); // Start the tween animation
+        // Person rotation
+        new TWEEN.Tween(this.rotation)
+            .onComplete(() => {
+                this.isTurning = false; // Reset flag once the turn is done
+            })
+            .to({ y: targetRotation }, 333)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .start();
 
-        turnTween.onComplete(() => {
-            this.isTurning = false;
-            // Update the universal direction of the character based on the direction they were facing pre-turn
-            if (this.direction === DIRECTION.STRAIGHT) {
-                this.direction = DIRECTION.RIGHT;
-            } else if (this.direction === DIRECTION.LEFT) {
-                this.direction = DIRECTION.STRAIGHT;
-            }
-        });
+        // Set camera to face right
+        if (this.camera.position.z === 7) {
+            this.camera.position.set(-7, 2, 0);
+        } else {
+            this.camera.position.set(0, 2, 7);
+        }
     }
 
     update(timeStamp) {

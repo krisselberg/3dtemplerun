@@ -31,6 +31,8 @@ class ChunkManager extends Group {
         // For ensuring we're never turned around
         this.leftTurnCount = 0;
         this.rightTurnCount = 0;
+        this.canTurnLeft = false;
+        this.canTurnRight = false;
 
         // For knowing which way the hero is moving in the universe
         this.direction = DIRECTION.STRAIGHT;
@@ -62,6 +64,7 @@ class ChunkManager extends Group {
             // wireframe: true,
         });
         const chunk = new Mesh(geometry, material);
+        chunk.color = color;
 
         // Default this value to false
         chunk.lastChunkInTurn = false;
@@ -150,8 +153,17 @@ class ChunkManager extends Group {
             // For the chunk 2 ahead of you, set it 1 to the right OF THE CHUNK YOU JUST SET 1 TO THE RIGHT. So 2 to the right.
             // And so on.
             let chunkIndex = (i + j) % numChunks;
+            let previousChunkIndex = (i + j - 2 + numChunks) % numChunks;
             this.chunks[chunkIndex].turnOffset =
                 leftRight * (j + 1) * chunkPxWidth;
+            // set canTurnLeft and canTurnRight on the previous chunk depending on the leftRight (WORKS)
+            if (leftRight === -1 && j === 0) {
+                this.chunks[previousChunkIndex].canTurnLeft = true;
+                this.chunks[previousChunkIndex].canTurnRight = false;
+            } else if (leftRight === 1 && j === 0) {
+                this.chunks[previousChunkIndex].canTurnLeft = false;
+                this.chunks[previousChunkIndex].canTurnRight = true;
+            }
 
             // This is what allows us to put each turned chunk next to each other in the z-axis
             // This is necessary because the origin is changing as the camera moves forward in the z-axis,
@@ -210,8 +222,21 @@ class ChunkManager extends Group {
         }
     }
 
+    updateChunkTurn(i) {
+        let chunk = this.chunks[i];
+
+        // If it is the chunk before the last chunk to be turned, set the canTurnLeft or canTurnRight flag
+        if (chunk.canTurnLeft == true) {
+            this.canTurnLeft = true;
+        } else if (chunk.canTurnRight == true) {
+            this.canTurnRight = true;
+        } else {
+            this.canTurnLeft = false;
+            this.canTurnRight = false;
+        }
+    }
+
     update(timeStamp) {
-        
         // Calculate the movement speed multiplier.
         // It starts at 1x speed, then increases until you reach
         // 2x speed at 120 seconds, then it stays there.
@@ -230,20 +255,28 @@ class ChunkManager extends Group {
             if (this.direction === DIRECTION.STRAIGHT) {
                 chunk.position.z += movementSpeed * movementSpeedMultiplier;
                 // If a chunk has moved past the camera, reset its position to the back or turn it
+                // In world coordinates, if a chunk has moved past the camera at 0,0,0, we call updateChunkTurn
                 if (chunk.position.z > chunkDepth) {
                     this.updateChunkPosition(i);
+                } else if (chunk.position.z > 0) {
+                    this.updateChunkTurn(i);
                 }
             } else if (this.direction === DIRECTION.LEFT) {
                 chunk.position.x += movementSpeed * movementSpeedMultiplier;
                 // If a chunk has moved past the camera, reset its position to the back or turn it
+                // If a player is on a chunk, updateChunkTurn
                 if (chunk.position.x > chunkDepth) {
                     this.updateChunkPosition(i);
+                } else if (chunk.position.x > 0) {
+                    this.updateChunkTurn(i);
                 }
             } else if (this.direction === DIRECTION.RIGHT) {
                 chunk.position.x -= movementSpeed * movementSpeedMultiplier;
                 // If a chunk has moved past the camera, reset its position to the back or turn it
                 if (chunk.position.x < -1 * chunkDepth) {
                     this.updateChunkPosition(i);
+                } else if (chunk.position.x < 0) {
+                    this.updateChunkTurn(i);
                 }
             }
         }

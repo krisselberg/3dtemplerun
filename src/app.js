@@ -10,14 +10,14 @@ import { WebGLRenderer, PerspectiveCamera, Vector3, AudioContext } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 
-// Initialize core ThreeJS components
-const scene = new SeedScene();
-const camera = new PerspectiveCamera();
-const renderer = new WebGLRenderer({ antialias: true });
-
 // Set up camera
-camera.position.set(0, 2, 7);
-camera.lookAt(new Vector3(0, 0, 5));
+const camera = new PerspectiveCamera();
+camera.position.set(0, 2, 7); // 0, 2, 7
+camera.lookAt(new Vector3(0, -5, 5));
+
+// Initialize core ThreeJS components
+const scene = new SeedScene(camera);
+const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);

@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Your Game Title</title>
+        <title>Temple Run Xtreme</title>
         <!-- Other head elements (stylesheets, meta tags, etc.) -->
         <style>
+            #titleScreen {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 2em;
+                flex-direction: column;
+            }
+
             #gameOverOverlay {
                 display: none;
                 position: absolute;
@@ -19,7 +34,7 @@
                 flex-direction: column; /* Align items vertically */
             }
 
-            #restartButton {
+            button {
                 margin-top: 20px; /* Space above the button */
                 padding: 10px 20px;
                 font-size: 1em;
@@ -31,14 +46,17 @@
                 outline: none;
             }
 
-            #restartButton:hover {
+            button:hover {
                 background-color: #d32f2f;
             }
         </style>
     </head>
     <body>
         <!-- Your canvas element for Three.js rendering -->
-        <canvas id="myCanvas"></canvas>
+        <div id="titleScreen">
+            <h1>Temple Run Xtreme</h1>
+            <button id="startButton" class="button" style>Start Game</button>
+        </div>
 
         <!-- Game Over Overlay -->
         <div id="gameOverOverlay">

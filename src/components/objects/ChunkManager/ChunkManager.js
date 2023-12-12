@@ -63,6 +63,7 @@ class ChunkManager extends Group {
 
     update(timeStamp) {
         // Move each chunk towards the camera
+        // TODO: Slowly crank up the speed as the game goes on
         for (let chunk of this.chunks) {
             chunk.position.z += movementSpeed;
 

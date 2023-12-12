@@ -72,6 +72,7 @@ class SeedScene extends Scene {
         const obstacles = chunks.flatMap((chunk) =>
             chunk.children.filter((child) => child instanceof Obstacle)
         );
+        console.log(obstacles);
 
         for (const obstacle of obstacles) {
             const obstacleBoundingBox = obstacle.getBoundingBox();

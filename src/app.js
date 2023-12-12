@@ -6,7 +6,7 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, AudioContext } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene } from 'scenes';
 
@@ -55,10 +55,35 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
+// Function to play audio
+let audioSource = null;
+const audioContext = new (window.AudioContext || window.webkitAudioContext)(); // Create AudioContext
+
+const playAudio = (url) => {
+    fetch(url)
+        .then((response) => response.arrayBuffer())
+        .then((arrayBuffer) => audioContext.decodeAudioData(arrayBuffer))
+        .then((audioBuffer) => {
+            audioSource = audioContext.createBufferSource();
+            audioSource.buffer = audioBuffer;
+            audioSource.connect(audioContext.destination);
+            audioSource.start(0);
+        })
+        .catch((e) => console.error('Error playing audio:', e));
+};
+
+const stopAudio = () => {
+    if (audioSource) {
+        audioSource.stop();
+        audioSource = null;
+    }
+};
+
 // Start Game Event Listener
 document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('startButton');
     const titleScreen = document.getElementById('titleScreen');
+
     if (startButton) {
         startButton.addEventListener('click', () => {
             if (titleScreen) {
@@ -66,6 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             canvas.style.display = 'block'; // Show the canvas
             startAnimationLoop(); // Start the animation loop
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            if (!audioSource) {
+                // Play audio only if it's not already playing
+                playAudio('game.m4a');
+            }
         });
     }
 });

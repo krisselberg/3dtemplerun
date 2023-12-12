@@ -12,8 +12,7 @@ class SeedScene extends Scene {
 
         // Init state
         this.state = {
-            gui: new Dat.GUI(), // Create GUI for scene
-            rotationSpeed: 0,
+            // gui: new Dat.GUI(), // Create GUI for scene
             updateList: [],
         };
 
@@ -29,9 +28,6 @@ class SeedScene extends Scene {
         const person = new Person(this, this.listener);
         const lights = new BasicLights();
         this.add(chunkManager, person, lights);
-
-        // Populate GUI
-        this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
 
         this.isGameRunning = true;
         this.setupRestartButton();
@@ -56,8 +52,8 @@ class SeedScene extends Scene {
             return; // Stop the update loop if the game is not running
         }
 
-        const { rotationSpeed, updateList } = this.state;
-        this.rotation.y = (rotationSpeed * timeStamp) / 10000;
+        const { updateList } = this.state;
+        // this.rotation.y = (timeStamp) / 10000;
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

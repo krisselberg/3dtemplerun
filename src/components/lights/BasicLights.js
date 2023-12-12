@@ -12,7 +12,16 @@ class BasicLights extends Group {
         dir.position.set(5, 1, 2);
         dir.target.position.set(0, 0, 0);
 
-        this.add(ambi, hemi, dir);
+        const dir2 = new SpotLight(0xffffff, 1.6, 7, 0.8, 1, 1);
+        const dir3 = new SpotLight(0xffffff, 1.6, 7, 0.8, 1, 1);
+
+        dir2.position.set(-5, 1, 2);
+        dir2.target.position.set(0, 0, 0);
+
+        dir3.position.set(0, 6, 2);
+        dir3.target.position.set(0, 0, 0);
+
+        this.add(ambi, hemi, dir, dir2, dir3);
     }
 }
 

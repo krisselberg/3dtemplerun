@@ -123,15 +123,15 @@ class Obstacle extends Group {
     createStaticBoundingBox(isBat, isStump) {
         if (isBat) {
             // Define the size of the bounding box
-            const size = new Vector3(2, 5, 4); // width, height, depth - adjust these values based on your character's size
+            const size = new Vector3(2, 2, 4); // width, height, depth - adjust these values based on your character's size
 
             // Calculate the min and max coordinates of the box
             const min = new Vector3(
                 -size.x / 2,
-                -size.y / 2 + 1,
+                -size.y / 2,
                 -size.z / 2 + 2
             );
-            const max = new Vector3(size.x / 2, size.y / 2 + 0.65, size.z / 2);
+            const max = new Vector3(size.x / 2, size.y / 2, size.z / 2);
 
             // Create the bounding box
             this.boundingBox = new Box3(min, max);

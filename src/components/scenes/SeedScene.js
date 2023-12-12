@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color } from 'three';
+import { Audio, Scene, Color, AudioListener, AudioLoader } from 'three';
 import { Person } from 'objects';
 import { BasicLights } from 'lights';
 import { ChunkManager } from 'objects';
@@ -22,7 +22,11 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         const chunkManager = new ChunkManager(this); // Create ChunkManager instance
-        const person = new Person(this);
+        this.listener = new AudioListener();
+        // Load and set up the death sound
+        this.setupDeathSound();
+
+        const person = new Person(this, this.listener);
         const lights = new BasicLights();
         this.add(chunkManager, person, lights);
 
@@ -31,6 +35,16 @@ class SeedScene extends Scene {
 
         this.isGameRunning = true;
         this.setupRestartButton();
+    }
+
+    setupDeathSound() {
+        // Create an audio player for the death sound
+        this.deathSound = new Audio(this.listener);
+        const audioLoader = new AudioLoader();
+        audioLoader.load('aaaaah.m4a', (buffer) => {
+            this.deathSound.setBuffer(buffer);
+            this.deathSound.setVolume(0.5); // Set volume as needed
+        });
     }
 
     addToUpdateList(object) {
@@ -78,6 +92,9 @@ class SeedScene extends Scene {
     }
 
     onGameOver() {
+        if (this.deathSound && !this.deathSound.isPlaying) {
+            this.deathSound.play();
+        }
         console.log('Game Over');
         this.isGameRunning = false; // Stop the game
 

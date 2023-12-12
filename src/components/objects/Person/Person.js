@@ -1,9 +1,17 @@
-import { Group, AnimationMixer, Box3, Box3Helper, Vector3 } from 'three';
+import {
+    Group,
+    AnimationMixer,
+    Box3,
+    Box3Helper,
+    Vector3,
+    Audio,
+    AudioLoader,
+} from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 
 class Person extends Group {
-    constructor(parent) {
+    constructor(parent, listener) {
         // Call parent Group() constructor
         super();
 
@@ -16,6 +24,22 @@ class Person extends Group {
             twirl: 0,
         };
 
+        // Create audio objects for jump and slide sounds
+        this.jumpSound = new Audio(listener);
+        this.slideSound = new Audio(listener);
+
+        // Load jump and slide sounds
+        const audioLoader = new AudioLoader();
+        audioLoader.load('jump.m4a', (buffer) => {
+            this.jumpSound.setBuffer(buffer);
+            this.jumpSound.setVolume(0.5); // adjust volume as needed
+        });
+
+        audioLoader.load('slide.m4a', (buffer) => {
+            this.slideSound.setBuffer(buffer);
+            this.slideSound.setVolume(0.5); // adjust volume as needed
+        });
+
         // Load object
         const loader = new GLTFLoader();
 
@@ -26,8 +50,9 @@ class Person extends Group {
             // Find and play the running animation
             const runAction = this.mixer.clipAction(gltf.animations[3]); // Assumes running animation is the first
             runAction.play();
-            // Store the jump action for later use
+            // Store actions for later use
             this.jumpAction = this.mixer.clipAction(gltf.animations[1]);
+            this.idleAction = this.mixer.clipAction(gltf.animations[0]);
             // rotate the person to face the camera
             gltf.scene.rotation.y = Math.PI;
             this.add(gltf.scene);
@@ -41,6 +66,8 @@ class Person extends Group {
         document.addEventListener('keydown', (event) => {
             if (event.code === 'ArrowUp') {
                 this.jump();
+            } else if (event.code === 'ArrowDown') {
+                this.slide();
             }
         });
     }
@@ -61,9 +88,44 @@ class Person extends Group {
 
         // Start animation
         if (this.jumpAction) {
+            if (this.jumpSound && !this.jumpSound.isPlaying) {
+                this.jumpSound.play();
+            }
             this.jumpAction.reset().play();
         }
         jumpUp.start();
+    }
+
+    slide() {
+        // Use timing library for more precice "bounce" animation
+        // TweenJS guide: http://learningthreejs.com/blog/2011/08/17/tweenjs-for-smooth-animation/
+        // Possible easings: http://sole.github.io/tween.js/examples/03_graphs.html
+        // Rotate the character to be on their back
+        this.rotation.x = Math.PI / 2;
+
+        const slide = new TWEEN.Tween(this.position)
+            .to({ y: this.position.x }, 500)
+            .easing(TWEEN.Easing.Quadratic.Out);
+        const getUp = new TWEEN.Tween(this.position)
+            .to({ y: 0 }, 500)
+            .easing(TWEEN.Easing.Quadratic.In);
+
+        // Get up after sliding and rotate back to normal
+        slide.onComplete(() => {
+            getUp.start();
+        });
+        getUp.onComplete(() => {
+            this.rotation.x = 0;
+        });
+
+        // Start animation
+        if (this.slideSound && !this.slideSound.isPlaying) {
+            this.slideSound.play();
+        }
+        if (this.idleAction) {
+            this.idleAction.reset().play();
+        }
+        slide.start();
     }
 
     update(timeStamp) {

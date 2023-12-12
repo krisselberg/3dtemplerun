@@ -2,12 +2,13 @@ import * as THREE from 'three';
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
 import Obstacle from '../Obstacle/Obstacle';
 
-const chunkPxLength = 40; // Length of the chunk
+const DIRECTION = { LEFT: -1, STRAIGHT: 0, RIGHT: 1 }; // Which way is the hero currently moving in the universe
+const chunkPxLength = 10; // Length of the chunk
 const chunkPxWidth = 10; // Width of the chunk
-const chunkDepth = 40; // Depth of the chunk
-// Note: Depth and length are the same so they don't overlap and spazz out
-const numChunks = 5; // Number of chunks to cycle
-const movementSpeed = 0.2; // Speed of movement
+const chunkDepth = 10; // Depth of the chunk
+// Note: Depth and length are the same so they don't overlap and freak out
+const numChunks = 20; // Number of chunks to cycle
+const movementSpeed = 0.4; // Speed of movement
 const turnProbability = 0.25; // Probability of chunks turning left or right
 
 class ChunkManager extends Group {
@@ -22,16 +23,18 @@ class ChunkManager extends Group {
         // just going straight
         // False is going straight
         this.isTurning = false;
-        
-        // turnDepth holds the z value of where the turn is happening,
-        // so that each chunk that is part of the turn can be set to
-        // that z position
-        this.turnDepth = 0;
+
+        // For ensuring we're never turned around
+        this.leftTurnCount = 0;
+        this.rightTurnCount = 0;
+
+        // For knowing which way the hero is moving in the universe
+        this.direction = DIRECTION.STRAIGHT;
 
         // Initialize chunks
         for (let i = 0; i < numChunks; i++) {
             // with different colors
-            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff];
+            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff, 0x00ff00, 0xff0000, 0x0000ff, 0xffff00, 0x00ffff];
             // create a chunk that is long but thin
             this.createChunk(-i * chunkDepth - chunkDepth, colors[i]);
         }
@@ -77,24 +80,54 @@ class ChunkManager extends Group {
     }
 
     sendChunkToBack(chunk) {
-        chunk.position.z -= numChunks * chunkDepth;
+        if (this.direction === DIRECTION.STRAIGHT) {
+            chunk.position.z -= numChunks * chunkDepth;
+        } else if (this.direction === DIRECTION.LEFT) {
+            chunk.position.x -= numChunks * chunkDepth;
+        }  else if (this.direction === DIRECTION.RIGHT) {
+            chunk.position.x += numChunks * chunkDepth;
+        }
     }
 
     turnSingleChunk(chunk) {
         // Send chunk towards the back, to the z value of the chunk that initiated the turn
-        chunk.position.z = chunk.depthOffset;
+        if (this.direction === DIRECTION.STRAIGHT) {
+            chunk.position.z = chunk.depthOffset;
+        } else { // Right or Left
+            chunk.position.x = chunk.depthOffset;
+        }
+
         // Send chunk to the left or right of the previous chunk
-        chunk.position.x = chunk.turnOffset;
-        // Reset the turnOffset to 0 because the chunk's been turned
-        chunk.turnOffset = 0;
+        if (this.direction === DIRECTION.STRAIGHT) {
+            chunk.position.x = chunk.turnOffset;
+        } else if (this.direction === DIRECTION.LEFT) {
+            chunk.position.z = -1 * chunk.turnOffset;
+        } else if (this.direction === DIRECTION.RIGHT) {
+            chunk.position.z = chunk.turnOffset;
+        }
     }
 
     initiateTurn(i) {
         // Set isTurning to true
         this.isTurning = true;
 
-        // 50/50 chance of left turn vs right turn
-        let leftRight = Math.random() < 0.5 ? -1 : 1;
+        // Even out the number of right/left turns, or pick at random if they're even
+        // this.direction keeps track of which way in the universe we're headed (straight, left, or right)
+        let leftRight;
+        if (this.leftTurnCount < this.rightTurnCount) {
+            leftRight = -1;
+            this.leftTurnCount++;
+        } else if (this.leftTurnCount > this.rightTurnCount) {
+            leftRight = 1;
+            this.rightTurnCount++;
+        } else {
+            leftRight = Math.random() < 0.5 ? -1 : 1;
+            if (leftRight === -1) {
+                this.leftTurnCount++;
+            } else {
+                this.rightTurnCount++;
+            }
+        }
         
         // Set turn offset of all coming chunks
         for (let j = 0; j < numChunks; j++) {
@@ -109,7 +142,13 @@ class ChunkManager extends Group {
             // This is necessary because the origin is changing as the camera moves forward in the z-axis,
             // so when we move the first chunk, we have to move it forward (numChunks - 1) units, and when we move
             // the final chunk, we just have to move it forward 1 unit.
-            this.chunks[chunkIndex].depthOffset = this.chunks[i].position.z - ((numChunks - (j+1)) * chunkDepth);
+            if (this.direction === DIRECTION.STRAIGHT) {
+                this.chunks[chunkIndex].depthOffset = this.chunks[i].position.z - ((numChunks - (j+1)) * chunkDepth);
+            } else if (this.direction === DIRECTION.LEFT) {
+                this.chunks[chunkIndex].depthOffset = this.chunks[i].position.x - ((numChunks - (j+1)) * chunkDepth);
+            } else if (this.direction === DIRECTION.RIGHT) {
+                this.chunks[chunkIndex].depthOffset = this.chunks[i].position.x + ((numChunks - (j+1)) * chunkDepth);
+            }
         }
 
         // Turn this single chunk
@@ -136,6 +175,10 @@ class ChunkManager extends Group {
             if (chunk.lastChunkInTurn === true) {
                 this.isTurning = false;
                 chunk.lastChunkInTurn = false;
+                // When the final chunk has been turned, mark that the hero is now moving a new direction in the universe
+                this.direction = this.leftTurnCount > this.rightTurnCount ? DIRECTION.LEFT 
+                    : this.rightTurnCount > this.leftTurnCount ? DIRECTION.RIGHT 
+                    : DIRECTION.STRAIGHT;
             }
         }
     }
@@ -145,12 +188,25 @@ class ChunkManager extends Group {
         for (let i = 0; i < numChunks; i++) {
             let chunk = this.chunks[i];
 
-            chunk.position.z += movementSpeed;
-
-            // If a chunk has moved past the camera, reset its position to the back or turn it
-            if (chunk.position.z > 30) {
-                this.updateChunkPosition(i);
-            }
+            if (this.direction === DIRECTION.STRAIGHT) {
+                chunk.position.z += movementSpeed;
+                // If a chunk has moved past the camera, reset its position to the back or turn it
+                if (chunk.position.z > chunkDepth) {
+                    this.updateChunkPosition(i);
+                }
+            } else if (this.direction === DIRECTION.LEFT) {
+                chunk.position.x += movementSpeed;
+                // If a chunk has moved past the camera, reset its position to the back or turn it
+                if (chunk.position.x > chunkDepth) {
+                    this.updateChunkPosition(i);
+                }
+            } else if (this.direction === DIRECTION.RIGHT) {
+                chunk.position.x -= movementSpeed;
+                // If a chunk has moved past the camera, reset its position to the back or turn it
+                if (chunk.position.x < -1 * chunkDepth) {
+                    this.updateChunkPosition(i);
+                }
+            } 
         }
     }
 }

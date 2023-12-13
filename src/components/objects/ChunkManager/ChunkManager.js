@@ -98,8 +98,6 @@ class ChunkManager extends Group {
 
     sendChunkToBack(chunk) {
         // add obstacle to chunk if corner chunk
-        console.log(chunk.isCorner); // undefined
-        console.log(chunk);
         if (this.direction === DIRECTION.STRAIGHT) {
             chunk.position.z -= numChunks * chunkDepth;
         } else if (this.direction === DIRECTION.LEFT) {
@@ -107,6 +105,7 @@ class ChunkManager extends Group {
         } else if (this.direction === DIRECTION.RIGHT) {
             chunk.position.x += numChunks * chunkDepth;
         }
+        // TODO: Add back obstacle?
     }
 
     turnSingleChunk(chunk) {
@@ -196,6 +195,11 @@ class ChunkManager extends Group {
         let cornerChunkIndex = (i - 1 + numChunks) % numChunks;
         let cornerChunk = this.chunks[cornerChunkIndex];
         console.log(cornerChunk.color);
+        // if corner chunk has obstacle, set cornerHadObstacle to true
+        console.log(cornerChunk.children);
+        if (cornerChunk.children.length > 0) {
+            cornerChunk.cornerHadObstacle = true;
+        }
         cornerChunk.children = cornerChunk.children.filter(
             (child) => !(child instanceof Obstacle)
         );

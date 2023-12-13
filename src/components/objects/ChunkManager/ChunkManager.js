@@ -1,5 +1,11 @@
 import * as THREE from 'three';
-import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
+import {
+    Group,
+    PlaneGeometry,
+    Mesh,
+    MeshBasicMaterial,
+    TextureLoader,
+} from 'three';
 import Obstacle from '../Obstacle/Obstacle';
 
 const DIRECTION = { LEFT: -1, STRAIGHT: 0, RIGHT: 1 }; // Which way is the hero currently moving in the universe
@@ -8,7 +14,7 @@ const chunkPxWidth = 10; // Width of the chunk
 const chunkDepth = 10; // Depth of the chunk
 // Note: Depth and length are the same so they don't overlap and freak out
 const numChunks = 20; // Number of chunks to cycle
-const movementSpeed = 0.3; // Speed of movement
+const movementSpeed = 0.8; // Speed of movement
 const turnProbability = 0.25; // Probability of chunks turning left or right
 const chunksBetweenObstacles = 3; //  1/n chunks have an obstacle
 
@@ -37,36 +43,32 @@ class ChunkManager extends Group {
         // For knowing which way the hero is moving in the universe
         this.direction = DIRECTION.STRAIGHT;
 
+        // Create a texture loader
+        this.textureLoader = new TextureLoader();
+
+        // Load the grass texture
+        this.grassTexture = this.textureLoader.load('grass.jpeg');
+
         // Initialize chunks
         for (let i = 0; i < numChunks; i++) {
-            // with different colors
-            const colors = [0x00ff00, 0xff0000, 0x0000ff, 0xffff00];
             // create a chunk that is long but thin
             // addObstacleFlag is such that every nth chunk has an obstacle
             let addObstacleFlag = false;
             if (i !== 0 && i % chunksBetweenObstacles === 0) {
                 addObstacleFlag = true;
             }
-            this.createChunk(
-                -i * chunkDepth - chunkDepth,
-                colors[i % 4],
-                addObstacleFlag
-            );
+            this.createChunk(-i * chunkDepth - chunkDepth, addObstacleFlag);
         }
 
         // Add self to parent's update list
         parent.addToUpdateList(this);
     }
 
-    createChunk(zPosition, color, addObstacleFlag) {
+    createChunk(zPosition, addObstacleFlag) {
         // Create the geometry and material for the chunk
         const geometry = new PlaneGeometry(chunkPxWidth, chunkPxLength, 10, 10);
-        const material = new MeshBasicMaterial({
-            color: color,
-            // wireframe: true,
-        });
+        const material = new MeshBasicMaterial({ map: this.grassTexture });
         const chunk = new Mesh(geometry, material);
-        chunk.color = color;
 
         // Default this value to false
         chunk.lastChunkInTurn = false;
@@ -194,7 +196,6 @@ class ChunkManager extends Group {
         // Delete obstacles from corner chunk (one before the last chunk in the turn)
         let cornerChunkIndex = (i - 1 + numChunks) % numChunks;
         let cornerChunk = this.chunks[cornerChunkIndex];
-        console.log(cornerChunk.color);
         // if corner chunk has obstacle, set cornerHadObstacle to true
         console.log(cornerChunk.children);
         if (cornerChunk.children.length > 0) {

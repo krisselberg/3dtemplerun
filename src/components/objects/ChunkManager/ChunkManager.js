@@ -14,7 +14,7 @@ const chunkPxWidth = 10; // Width of the chunk
 const chunkDepth = 10; // Depth of the chunk
 // Note: Depth and length are the same so they don't overlap and freak out
 const numChunks = 20; // Number of chunks to cycle
-const movementSpeed = 0.15; // Speed of movement
+const movementSpeed = 0.12; // Speed of movement
 const turnProbability = 0.25; // Probability of chunks turning left or right
 const chunksBetweenObstacles = 3; //  1/n chunks have an obstacle
 

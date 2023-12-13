@@ -8,7 +8,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, buildPath),
         filename: '[name].[hash].js',
-        publicPath: `/${pkg.repository}/`,
+        publicPath: `${pkg.repository}`,
     },
     target: 'web',
     devtool: 'source-map',
@@ -46,6 +46,8 @@ module.exports = {
             title: pkg.title,
             favicon: 'src/favicon.ico',
             template: 'index.html', // Path to your index.html file
+            publicPath: '/3dtemplerun/',
+            inject: true, // injects the app.js script into our index.html file
         }),
     ],
     devServer: {

@@ -44,7 +44,9 @@ class ChunkManager extends Group {
             // create a chunk that is long but thin
             // addObstacleFlag is such that every nth chunk has an obstacle
             let addObstacleFlag = false;
-            // if (i % chunksBetweenObstacles === 0) addObstacleFlag = true;
+            if (i !== 0 && i % chunksBetweenObstacles === 0) {
+                addObstacleFlag = true;
+            }
             this.createChunk(
                 -i * chunkDepth - chunkDepth,
                 colors[i % 4],
@@ -86,7 +88,6 @@ class ChunkManager extends Group {
             // get obstacle height and position z so the bottom of obstacle is on ground
             const obstacleHeight = obstacle.getHeight();
             obstacle.position.z = obstacleHeight / 2;
-
             chunk.add(obstacle);
         }
 
@@ -96,6 +97,8 @@ class ChunkManager extends Group {
     }
 
     sendChunkToBack(chunk) {
+        // add obstacle to chunk if corner chunk
+        console.log(chunk.isCorner);
         if (this.direction === DIRECTION.STRAIGHT) {
             chunk.position.z -= numChunks * chunkDepth;
         } else if (this.direction === DIRECTION.LEFT) {
@@ -188,6 +191,13 @@ class ChunkManager extends Group {
                     (numChunks - (j + 1)) * chunkDepth;
             }
         }
+        // Delete obstacles from corner chunk (one before the last chunk in the turn)
+        let cornerChunkIndex = (i - 1 + numChunks) % numChunks;
+        let cornerChunk = this.chunks[cornerChunkIndex];
+        console.log(cornerChunk.color);
+        cornerChunk.children = cornerChunk.children.filter(
+            (child) => !(child instanceof Obstacle)
+        );
 
         // Turn this single chunk
         this.turnSingleChunk(this.chunks[i]);
@@ -229,7 +239,7 @@ class ChunkManager extends Group {
 
     updateChunkTurn(i) {
         let chunk = this.chunks[i];
-        console.log(chunk);
+        // console.log(chunk);
 
         // If it is the chunk before the last chunk to be turned, set the canTurnLeft or canTurnRight flag
         if (chunk.canTurnLeft == true) {

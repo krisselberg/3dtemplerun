@@ -22,7 +22,7 @@ class Person extends Group {
 
         this.camera = camera;
 
-        this.direction = DIRECTION.STRAIGHT;
+        this.direction = this.chunkManager.direction; // Which way is the hero currently moving in the universe
 
         // Init state
         this.state = {
@@ -121,57 +121,55 @@ class Person extends Group {
 
         this.isSliding = true; // Set flag to indicate sliding
 
-        // Modify based on which way the character is facing,
-        // so they always slide by putting their head straight back
-        // to the ground
-        let rotateToBack;
-        let slide;
-        let getUp;
-        let rotateBack;
+        // Define the world's X-axis for rotation
+        let worldAxisX = new Vector3(1, 0, 0);
+        if (this.direction === DIRECTION.LEFT) {
+            worldAxisX = new Vector3(0, 0, -1);
+        } else if (this.direction === DIRECTION.RIGHT) {
+            worldAxisX = new Vector3(0, 0, 1);
+        }
 
-        // if (this.direction === DIRECTION.STRAIGHT) {
         // Start rotation to have the character lie on their back
-        rotateToBack = new TWEEN.Tween(this.rotation)
-            .to({ x: Math.PI / 2 }, 200)
+        let rotateToBack = new TWEEN.Tween({ theta: 0 })
+            .to({ theta: Math.PI / 2 }, 200) // Rotate by 90 degrees
+            .onUpdate(({ theta }) => {
+                // Reset the rotation, but if character is facing left or right, keep that rotation
+                if (this.direction === DIRECTION.STRAIGHT) {
+                    this.rotation.set(0, 0, 0);
+                } else if (this.direction === DIRECTION.LEFT) {
+                    this.rotation.set(0, Math.PI / 2, 0);
+                } else if (this.direction === DIRECTION.RIGHT) {
+                    this.rotation.set(0, -Math.PI / 2, 0);
+                }
+                this.rotateOnWorldAxis(worldAxisX, theta);
+            })
             .easing(TWEEN.Easing.Quadratic.InOut);
 
         // Slide animation
-        slide = new TWEEN.Tween(this.position)
+        let slide = new TWEEN.Tween(this.position)
             .to({ y: this.position.x }, 500)
             .easing(TWEEN.Easing.Quadratic.Out);
 
         // Get up animation
-        getUp = new TWEEN.Tween(this.position)
+        let getUp = new TWEEN.Tween(this.position)
             .to({ y: 0 }, 200)
             .easing(TWEEN.Easing.Quadratic.In);
 
         // Rotate back to normal after getting up
-        rotateBack = new TWEEN.Tween(this.rotation)
-            .to({ x: 0 }, 200)
+        let rotateBack = new TWEEN.Tween({ theta: Math.PI / 2 })
+            .to({ theta: 0 }, 200) // Rotate back to 0 degrees
+            .onUpdate(({ theta }) => {
+                // Reset the rotation, but if character is facing left or right, keep that rotation
+                if (this.direction === DIRECTION.STRAIGHT) {
+                    this.rotation.set(0, 0, 0);
+                } else if (this.direction === DIRECTION.LEFT) {
+                    this.rotation.set(0, Math.PI / 2, 0);
+                } else if (this.direction === DIRECTION.RIGHT) {
+                    this.rotation.set(0, -Math.PI / 2, 0);
+                }
+                this.rotateOnWorldAxis(worldAxisX, theta);
+            })
             .easing(TWEEN.Easing.Quadratic.InOut);
-        // }
-
-        // else if (this.direction === DIRECTION.LEFT) {
-        //     // Start rotation to have the character lie on their back
-        //     rotateToBack = new TWEEN.Tween(this.rotation)
-        //         .to({ z: (-1 * Math.PI) / 2 }, 200) // Rotate around z-axis
-        //         .easing(TWEEN.Easing.Quadratic.InOut);
-
-        //     // Slide animation
-        //     slide = new TWEEN.Tween(this.position)
-        //         .to({ y: this.position.z }, 500)
-        //         .easing(TWEEN.Easing.Quadratic.Out);
-
-        //     // Get up animation
-        //     getUp = new TWEEN.Tween(this.position)
-        //         .to({ y: 0 }, 200)
-        //         .easing(TWEEN.Easing.Quadratic.In);
-
-        //     // Rotate back to normal after getting up
-        //     rotateBack = new TWEEN.Tween(this.rotation)
-        //         .to({ z: 0 }, 200)
-        //         .easing(TWEEN.Easing.Quadratic.InOut);
-        // }
 
         // Chain animations
         rotateToBack.onComplete(() => slide.start());
@@ -183,19 +181,17 @@ class Person extends Group {
         // Reset flags and animations once sliding is complete
         rotateBack.onComplete(() => {
             this.isSliding = false; // Reset flag once the slide is done
-            if (this.slideAction) {
-                this.slideAction.fadeOut(0.2); // Fade out the slide animation
+            if (this.slideSound && !this.slideSound.isPlaying) {
+                this.slideSound.play();
             }
-            this.runAction.reset().fadeIn(0.2).play(); // Fade in and restart running animation
+            // Reset running animation if it exists
+            if (this.runAction) {
+                this.runAction.reset().fadeIn(0.2).play(); // Fade in and restart running animation
+            }
         });
 
         // Start the initial rotation animation
         rotateToBack.start();
-
-        // Additional code for sound
-        if (this.slideSound && !this.slideSound.isPlaying) {
-            this.slideSound.play();
-        }
     }
 
     // Method to handle left and right turns
@@ -282,6 +278,8 @@ class Person extends Group {
     }
 
     update(timeStamp) {
+        this.direction = this.chunkManager.direction; // Update the direction
+
         if (this.mixer) {
             // Update the animation mixer, if it exists
             this.mixer.update((timeStamp - this.previousTimestamp) / 1000);

@@ -79,20 +79,20 @@ class ChunkManager extends Group {
         chunk.position.z = zPosition;
 
         // Attach the obstacle to the chunk
-        if (addObstacleFlag) {
-            // Add obstacle to each chunk
-            const obstacle = new Obstacle(); // Now automatically determines its size and type
+        // if (addObstacleFlag) {
+        //     // Add obstacle to each chunk
+        //     const obstacle = new Obstacle(); // Now automatically determines its size and type
 
-            // Random position within the chunk
-            const positionRange = chunkPxWidth * 0.2;
-            obstacle.position.x =
-                Math.random() * positionRange - positionRange / 2;
+        //     // Random position within the chunk
+        //     const positionRange = chunkPxWidth * 0.2;
+        //     obstacle.position.x =
+        //         Math.random() * positionRange - positionRange / 2;
 
-            // get obstacle height and position z so the bottom of obstacle is on ground
-            const obstacleHeight = obstacle.getHeight();
-            obstacle.position.z = obstacleHeight / 2;
-            chunk.add(obstacle);
-        }
+        //     // get obstacle height and position z so the bottom of obstacle is on ground
+        //     const obstacleHeight = obstacle.getHeight();
+        //     obstacle.position.z = obstacleHeight / 2;
+        //     chunk.add(obstacle);
+        // }
 
         // Add the chunk to the scene and to the chunks array
         this.add(chunk);
@@ -108,7 +108,7 @@ class ChunkManager extends Group {
         } else if (this.direction === DIRECTION.RIGHT) {
             chunk.position.x += numChunks * chunkDepth;
         }
-        // TODO: Add back obstacle?
+        // TODO: Add back obstacle on corner block?
     }
 
     turnSingleChunk(chunk) {

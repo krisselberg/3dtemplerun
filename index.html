@@ -4,82 +4,195 @@
         <title>Temple Run Xtreme</title>
         <!-- Other head elements (stylesheets, meta tags, etc.) -->
         <style>
-            #titleScreen {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
+            @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+            /* Body Styles */
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Press Start 2P', cursive;
+                background: linear-gradient(
+                    to right,
+                    orange,
+                    #ff7e00,
+                    #ff6600,
+                    #ff4d00,
+                    white,
+                    #00e6e6,
+                    #00cccc,
+                    #00b3b3,
+                    turquoise
+                );
+                min-height: 100vh;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: 2em;
-                flex-direction: column;
             }
 
+            /* Title Screen and Game Over Overlay Styles */
+            #titleScreen,
             #gameOverOverlay {
-                display: none;
+                color: white;
+                text-align: center;
+                padding: 20px;
+                margin: auto;
                 position: absolute;
                 top: 0;
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                color: white;
+                display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: 2em;
-                flex-direction: column; /* Align items vertically */
+                flex-direction: column;
+                margin-top: -40px;
             }
 
+            /* Game Over Overlay Styles */
+            #gameOverOverlay {
+                display: none;
+                background: rgba(0, 0, 0, 0.5);
+            }
+
+            /* Specific styles for paragraphs in Game Over Overlay */
+            #gameOverOverlay p {
+                font-size: 1.5em;
+                text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                    2px 2px 0 #000;
+            }
+
+            h1 {
+                font-size: 3em;
+                text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                    2px 2px 0 #000;
+            }
+
+            /* Intro Text Styles */
+            #introText {
+                font-size: 2em;
+                background-color: #ffffffa0;
+                padding: 15px;
+                border-radius: 15px;
+                white-space: pre-line;
+                text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                    2px 2px 0 #000;
+            }
+
+            /* Button Styles */
             button {
-                margin-top: 20px; /* Space above the button */
-                padding: 10px 20px;
-                font-size: 1em;
+                margin-top: 20px;
+                padding: 15px 30px;
+                font-size: 2em;
                 cursor: pointer;
-                background-color: #f44336;
+                background-color: transparent;
                 color: white;
-                border: none;
+                border: 3px solid white;
                 border-radius: 5px;
                 outline: none;
+                transition: background-color 0.3s, transform 0.3s ease-in-out;
+                font-family: 'Press Start 2P', cursive;
+                text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                    2px 2px 0 #000;
             }
 
             button:hover {
-                background-color: #d32f2f;
+                background-color: rgba(255, 255, 255, 0.2);
+                background-color: #45a049; /* Overriding for hover effect */
             }
-        </style>
-    </head>
-    <body>
-        <!-- Your canvas element for Three.js rendering -->
-        <div id="titleScreen">
-            <h1>Temple Run Xtreme</h1>
-            <button id="startButton" class="button" style>Start Game</button>
-        </div>
 
-        <div
-            id="scoreElement"
-            style="
+            /* Logo Styles */
+            #logo {
+                max-width: 15%;
+                margin-bottom: 15px;
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #logo:hover {
+                transform: scale(1.1);
+            }
+
+            /* Score Element Styles */
+            #scoreElement {
                 position: absolute;
                 top: 10px;
                 right: 10px;
                 color: white;
                 font-size: 24px;
                 z-index: 1000;
-                display: none; /* Initially hidden */
-            "
-        >
-            Score: 0
+                display: none;
+            }
+
+            @media screen and (max-height: 700px) {
+                h1 {
+                    font-size: 3em;
+                }
+
+                #introText {
+                    font-size: 1em;
+                }
+
+                button {
+                    padding: 10px 20px;
+                }
+            }
+
+            #creatorInfo,
+            #advisorInfo {
+                position: absolute;
+                font-size: 1.5em; /* Adjust the size as needed */
+                color: white;
+                text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                    2px 2px 0 #000;
+            }
+
+            #creatorInfo {
+                bottom: 10px;
+                left: 10px;
+            }
+
+            #advisorInfo {
+                bottom: 10px;
+                right: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="titleScreen">
+            <img id="logo" src="/logo.png" alt="Game Logo" />
+            <h1>Temple Run Xtreme</h1>
+            <p id="introText">
+                Get ready for an extreme adventure!<br />
+                Use the 'Up' key to jump.<br />
+                The 'Down' key to slide.<br />
+                The 'Left' and 'Right' keys to turn.<br />
+                Try to survive as long as you can.<br />
+                Good luck and have fun!
+            </p>
+            <button id="startButton" class="button">Start Game</button>
         </div>
 
-        <!-- Game Over Overlay -->
+        <div id="scoreElement">Score: 0</div>
+
         <div id="gameOverOverlay">
-            <p>Game Over</p>
+            <h1>Game Over</h1>
+            <p>
+                What an incredible journey! <br />
+                <br />
+                Take a moment, then jump back in to beat your high score!
+            </p>
             <button id="restartButton">Restart Game</button>
         </div>
 
-        <!-- Your scripts (Three.js, your JavaScript files, etc.) -->
-        <script src="app.js"></script>
+        <div id="creatorInfo">
+            Created by <br /> <br /> Bashar Eid, <br /> <br /> Kris Selberg, <br /> <br /> Thomas Hughes <br /> <br /> &#x1F42F;
+            '24
+        </div>
+        <div id="advisorInfo">
+            Advised by <br /> <br /> Adam Finkelstein <br /> <br /> &#128293; &#128038; '87 <br /> <br /> &#128054; '96 <br /> <br /> &#129359;
+            enthusiast
+        </div>
+
+        <!-- Other HTML elements -->
+        <script src="/app.js"></script>
     </body>
 </html>

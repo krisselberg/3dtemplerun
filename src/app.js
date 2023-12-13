@@ -29,10 +29,10 @@ document.body.appendChild(canvas);
 
 // Set up controls
 const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true;
-controls.enablePan = false;
-controls.minDistance = 4;
-controls.maxDistance = 16;
+controls.enableDamping = false; // Disable damping which smooths out camera movements
+controls.enableZoom = false; // Disable zooming
+controls.enableRotate = false; // Disable rotation
+controls.enablePan = false; // Disable panning
 
 // Function to start the animation loop
 const startAnimationLoop = () => {

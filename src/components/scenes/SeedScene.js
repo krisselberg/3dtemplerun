@@ -1,5 +1,12 @@
 import * as Dat from 'dat.gui';
-import { Audio, Scene, Color, AudioListener, AudioLoader } from 'three';
+import {
+    Audio,
+    Scene,
+    Color,
+    AudioListener,
+    AudioLoader,
+    TextureLoader,
+} from 'three';
 import { Person } from 'objects';
 import { BasicLights } from 'lights';
 import { ChunkManager } from 'objects';
@@ -17,7 +24,11 @@ class SeedScene extends Scene {
         };
 
         // Set background to a nice color
-        this.background = new Color(0x000000);
+        const loader = new TextureLoader();
+        loader.load('space.avif', (texture) => {
+            // Apply the texture to the background
+            this.background = texture;
+        });
 
         // Add meshes to scene
         const chunkManager = new ChunkManager(this); // Create ChunkManager instance

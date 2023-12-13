@@ -98,7 +98,8 @@ class ChunkManager extends Group {
 
     sendChunkToBack(chunk) {
         // add obstacle to chunk if corner chunk
-        console.log(chunk.isCorner);
+        console.log(chunk.isCorner); // undefined
+        console.log(chunk);
         if (this.direction === DIRECTION.STRAIGHT) {
             chunk.position.z -= numChunks * chunkDepth;
         } else if (this.direction === DIRECTION.LEFT) {

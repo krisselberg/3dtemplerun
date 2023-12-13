@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             canvas.style.display = 'block'; // Show the canvas
             scoreElement.style.display = 'block'; // Show the score
+            scene.resetScore(); // Reset the score
             startAnimationLoop(); // Start the animation loop
             if (audioContext.state === 'suspended') {
                 audioContext.resume();

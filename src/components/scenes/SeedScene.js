@@ -46,8 +46,6 @@ class SeedScene extends Scene {
         this.isGameRunning = true;
         this.setupRestartButton();
 
-        this.startTime = Date.now();
-        this.score = 0;
         this.scoreElement = document.getElementById('scoreElement');
     }
 
@@ -135,6 +133,11 @@ class SeedScene extends Scene {
                 });
             }
         });
+    }
+
+    resetScore() {
+        this.score = 0;
+        this.startTime = Date.now(); // Reset the start time
     }
 
     restartGame() {

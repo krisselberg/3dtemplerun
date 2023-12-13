@@ -23,8 +23,9 @@ class ChunkManager extends Group {
         super();
         this.name = 'chunkManager';
 
-        // For having the speed get faster over time
-        this.startTime = Date.now();
+        // Set the start time of the round only once
+        // This is how we handle the movement speed multiplier
+        this.startTimeSet = false;
 
         // Create an array to hold the chunks
         this.chunks = [];
@@ -133,6 +134,13 @@ class ChunkManager extends Group {
         // Set isTurning to true
         this.isTurning = true;
 
+        // After the first turn, the pace the player is moving will steadily get faster
+        if (this.startTimeSet === false) {
+            // For having the speed get faster over time
+            this.startTime = Date.now();
+            this.startTimeSet = true;
+        }
+
         // Even out the number of right/left turns, or pick at random if they're even
         // this.direction keeps track of which way in the universe we're headed (straight, left, or right)
         let leftRight;
@@ -164,12 +172,10 @@ class ChunkManager extends Group {
                 leftRight * (j + 1) * chunkPxWidth;
             // set canTurnLeft and canTurnRight on the previous chunk depending on the leftRight (WORKS)
             if (leftRight === -1 && j === 0) {
-                console.log('left');
                 this.chunks[cornerChunkIndex].isCorner = true; // set isCorner to true to check for missing turn
                 this.chunks[previousChunkIndex].canTurnLeft = true;
                 this.chunks[previousChunkIndex].canTurnRight = false;
             } else if (leftRight === 1 && j === 0) {
-                console.log('right');
                 this.chunks[cornerChunkIndex].isCorner = true; // set isCorner to true to check for missing turn
                 this.chunks[previousChunkIndex].canTurnLeft = false;
                 this.chunks[previousChunkIndex].canTurnRight = true;
@@ -245,7 +251,6 @@ class ChunkManager extends Group {
 
     updateChunkTurn(i) {
         let chunk = this.chunks[i];
-        // console.log(chunk);
 
         // If it is the chunk before the last chunk to be turned, set the canTurnLeft or canTurnRight flag
         if (chunk.canTurnLeft == true) {
@@ -263,15 +268,20 @@ class ChunkManager extends Group {
 
     update(timeStamp) {
         // Calculate the movement speed multiplier.
-        // It starts at 1x speed, then increases until you reach
-        // 2x speed at 120 seconds, then it stays there.
-        let elapsedTime = (Date.now() - this.startTime) / 1000; // Time in seconds
-        let rawMultiplier = Math.sqrt(elapsedTime);
-        // Normalize the multiplier to reach approximately 2x at 120 seconds.
-        // Since sqrt(120) is about 10.95, divide rawMultiplier by 10.95/2 to scale it.
-        let normalizedMultiplier = rawMultiplier / (10.95 / 2);
-        // Cap the multiplier at 3
-        let movementSpeedMultiplier = Math.min(normalizedMultiplier, 2);
+        let movementSpeedMultiplier = 1;
+        if (this.startTime) {
+            // Only starts increasing after the first turn (when startTime is set)
+            // It starts at 1x speed, then increases until you reach
+            // 3x speed at 90 seconds, then it stays there.
+            let elapsedTime = (Date.now() - this.startTime) / 1000; // Time in seconds
+            if (elapsedTime < 60) {
+                // Gradually increase from 1x speed to 3x speed over 90 seconds
+                movementSpeedMultiplier = 1 + 2 * (elapsedTime / 90);
+            } else {
+                // After 90 seconds, keep it constant at 3
+                movementSpeedMultiplier = 3;
+            }
+        }
 
         // Move each chunk towards the camera
         for (let i = 0; i < numChunks; i++) {

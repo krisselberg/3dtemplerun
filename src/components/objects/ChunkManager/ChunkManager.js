@@ -14,7 +14,7 @@ const chunkPxWidth = 10; // Width of the chunk
 const chunkDepth = 10; // Depth of the chunk
 // Note: Depth and length are the same so they don't overlap and freak out
 const numChunks = 20; // Number of chunks to cycle
-const movementSpeed = 0.8; // Speed of movement
+const movementSpeed = 0.15; // Speed of movement
 const turnProbability = 0.25; // Probability of chunks turning left or right
 const chunksBetweenObstacles = 3; //  1/n chunks have an obstacle
 
@@ -79,20 +79,20 @@ class ChunkManager extends Group {
         chunk.position.z = zPosition;
 
         // Attach the obstacle to the chunk
-        // if (addObstacleFlag) {
-        //     // Add obstacle to each chunk
-        //     const obstacle = new Obstacle(); // Now automatically determines its size and type
+        if (addObstacleFlag) {
+            // Add obstacle to each chunk
+            const obstacle = new Obstacle(); // Now automatically determines its size and type
 
-        //     // Random position within the chunk
-        //     const positionRange = chunkPxWidth * 0.2;
-        //     obstacle.position.x =
-        //         Math.random() * positionRange - positionRange / 2;
+            // Random position within the chunk
+            const positionRange = chunkPxWidth * 0.2;
+            obstacle.position.x =
+                Math.random() * positionRange - positionRange / 2;
 
-        //     // get obstacle height and position z so the bottom of obstacle is on ground
-        //     const obstacleHeight = obstacle.getHeight();
-        //     obstacle.position.z = obstacleHeight / 2;
-        //     chunk.add(obstacle);
-        // }
+            // get obstacle height and position z so the bottom of obstacle is on ground
+            const obstacleHeight = obstacle.getHeight();
+            obstacle.position.z = obstacleHeight / 2;
+            chunk.add(obstacle);
+        }
 
         // Add the chunk to the scene and to the chunks array
         this.add(chunk);

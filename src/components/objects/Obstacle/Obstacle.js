@@ -6,7 +6,6 @@ import {
     Group,
     Box3,
     Vector3,
-    Box3Helper,
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -49,8 +48,6 @@ class Obstacle extends Group {
         cube.position.set(0, 0, verticalPosition);
 
         this.boundingBox = new Box3().setFromObject(cube);
-        this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000);
-        this.add(this.boundingBoxHelper);
     }
 
     loadBat() {
@@ -126,19 +123,11 @@ class Obstacle extends Group {
             const size = new Vector3(2, 2, 4); // width, height, depth - adjust these values based on your character's size
 
             // Calculate the min and max coordinates of the box
-            const min = new Vector3(
-                -size.x / 2,
-                -size.y / 2,
-                -size.z / 2 + 2
-            );
+            const min = new Vector3(-size.x / 2, -size.y / 2, -size.z / 2 + 2);
             const max = new Vector3(size.x / 2, size.y / 2, size.z / 2);
 
             // Create the bounding box
             this.boundingBox = new Box3(min, max);
-
-            // Create and add the bounding box helper for visualization
-            this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000);
-            this.add(this.boundingBoxHelper);
         } else if (isStump) {
             // Define the size of the bounding box
             const size = new Vector3(2, 2, 1); // width, height, depth - adjust these values based on your character's size
@@ -153,10 +142,6 @@ class Obstacle extends Group {
 
             // Create the bounding box
             this.boundingBox = new Box3(min, max);
-
-            // Create and add the bounding box helper for visualization
-            this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000);
-            this.add(this.boundingBoxHelper);
         }
     }
 }

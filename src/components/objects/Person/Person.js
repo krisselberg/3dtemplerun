@@ -2,7 +2,6 @@ import {
     Group,
     AnimationMixer,
     Box3,
-    Box3Helper,
     Vector3,
     Audio,
     AudioLoader,
@@ -298,8 +297,6 @@ class Person extends Group {
         // Calculate bounding box
         if (!this.boundingBox && this.children.length > 0) {
             this.boundingBox = new Box3().setFromObject(this);
-            this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000); // Red color for visibility
-            this.add(this.boundingBoxHelper); // Add the helper to the Person group
         }
 
         function vectorsAreClose(v1, v2, tolerance = 0.1) {
@@ -354,10 +351,6 @@ class Person extends Group {
 
         // Create the bounding box
         this.boundingBox = new Box3(min, max);
-
-        // Create and add the bounding box helper for visualization
-        this.boundingBoxHelper = new Box3Helper(this.boundingBox, 0xff0000);
-        this.add(this.boundingBoxHelper);
     }
 }
 

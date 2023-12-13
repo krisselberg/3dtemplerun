@@ -304,6 +304,37 @@ class Person extends Group {
             this.add(this.boundingBoxHelper); // Add the helper to the Person group
         }
 
+        function vectorsAreClose(v1, v2, tolerance = 0.1) {
+            return (
+                Math.abs(v1.x - v2.x) < tolerance &&
+                Math.abs(v1.y - v2.y) < tolerance &&
+                Math.abs(v1.z - v2.z) < tolerance
+            );
+        }
+
+        if (
+            this.chunkManager.isCorner &&
+            this.chunkManager.direction === DIRECTION.STRAIGHT
+        ) {
+            if (!vectorsAreClose(this.camera.position, new Vector3(0, 2, 7))) {
+                this.parent.onGameOver();
+            }
+        } else if (
+            this.chunkManager.isCorner &&
+            this.chunkManager.direction === DIRECTION.LEFT
+        ) {
+            if (!vectorsAreClose(this.camera.position, new Vector3(7, 2, 0))) {
+                this.parent.onGameOver();
+            }
+        } else if (
+            this.chunkManager.isCorner &&
+            this.chunkManager.direction === DIRECTION.RIGHT
+        ) {
+            if (!vectorsAreClose(this.camera.position, new Vector3(-7, 2, 0))) {
+                this.parent.onGameOver();
+            }
+        }
+
         // Advance tween animations, if any exist
         TWEEN.update();
     }

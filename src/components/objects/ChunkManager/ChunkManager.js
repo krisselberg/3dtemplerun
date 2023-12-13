@@ -153,14 +153,19 @@ class ChunkManager extends Group {
             // For the chunk 2 ahead of you, set it 1 to the right OF THE CHUNK YOU JUST SET 1 TO THE RIGHT. So 2 to the right.
             // And so on.
             let chunkIndex = (i + j) % numChunks;
+            let cornerChunkIndex = (i + j - 1 + numChunks) % numChunks;
             let previousChunkIndex = (i + j - 2 + numChunks) % numChunks;
             this.chunks[chunkIndex].turnOffset =
                 leftRight * (j + 1) * chunkPxWidth;
             // set canTurnLeft and canTurnRight on the previous chunk depending on the leftRight (WORKS)
             if (leftRight === -1 && j === 0) {
+                console.log('left');
+                this.chunks[cornerChunkIndex].isCorner = true; // set isCorner to true to check for missing turn
                 this.chunks[previousChunkIndex].canTurnLeft = true;
                 this.chunks[previousChunkIndex].canTurnRight = false;
             } else if (leftRight === 1 && j === 0) {
+                console.log('right');
+                this.chunks[cornerChunkIndex].isCorner = true; // set isCorner to true to check for missing turn
                 this.chunks[previousChunkIndex].canTurnLeft = false;
                 this.chunks[previousChunkIndex].canTurnRight = true;
             }
@@ -224,15 +229,19 @@ class ChunkManager extends Group {
 
     updateChunkTurn(i) {
         let chunk = this.chunks[i];
+        console.log(chunk);
 
         // If it is the chunk before the last chunk to be turned, set the canTurnLeft or canTurnRight flag
         if (chunk.canTurnLeft == true) {
             this.canTurnLeft = true;
         } else if (chunk.canTurnRight == true) {
             this.canTurnRight = true;
+        } else if (chunk.isCorner == true) {
+            this.isCorner = true;
         } else {
             this.canTurnLeft = false;
             this.canTurnRight = false;
+            this.isCorner = false;
         }
     }
 

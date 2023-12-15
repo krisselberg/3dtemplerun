@@ -1,5 +1,5 @@
 # COS 426 Final Project
-This project was completed by Thomas Hughes, Bashar Eid, and Kris Selberg. Here you can find our [writeup](), [demo video](https://youtu.be/NmedAspTckU), and [working game](https://krisselberg.github.io/3dtemplerun/).
+This project was completed by Thomas Hughes, Bashar Eid, and Kris Selberg. Here you can find our [writeup](https://krisselberg.github.io/3dtemplerun/writeup.pdf), [demo video](https://youtu.be/NmedAspTckU), and [working game](https://krisselberg.github.io/3dtemplerun/).
 
 ## Cloning this template at Github
 To make your own copy of this project at Github, sign into your Github account, navigate to this project [at Github](https://github.com/adamfinkelstein/cos426finalproject/tree/main) and then click the big green button at the top: "Use this template" > "Create a new repository". 

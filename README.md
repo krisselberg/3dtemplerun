@@ -1,7 +1,5 @@
-# COS 426 Final Project Template
-This skeleton project will help you get started with a ThreeJS project and provide a strong foundation for extension. It sets up a simple scene, camera, and renderer in a modern JavaScript environment, and is written using some common best-practices that you may want to draw from.
-
-To see it running live on the web, check out the [Online Demo](https://adamfinkelstein.github.io/cos426finalproject/)
+# COS 426 Final Project
+This project was completed by Thomas Hughes, Bashar Eid, and Kris Selberg. Here you can find our [writeup](), [demo video](https://youtu.be/NmedAspTckU), and [working game](https://krisselberg.github.io/3dtemplerun/).
 
 ## Cloning this template at Github
 To make your own copy of this project at Github, sign into your Github account, navigate to this project [at Github](https://github.com/adamfinkelstein/cos426finalproject/tree/main) and then click the big green button at the top: "Use this template" > "Create a new repository". 
